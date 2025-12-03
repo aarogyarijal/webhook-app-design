@@ -67,9 +67,6 @@ export default function Home() {
           {producers.length === 0 ? (
             <Card className="p-12 text-center border-border">
               <p className="text-muted-foreground mb-4">No producers yet</p>
-              <Button onClick={() => setShowForm(true)} variant="outline">
-                Create your first producer
-              </Button>
             </Card>
           ) : (
             producers.map((producer) => (
