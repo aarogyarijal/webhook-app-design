@@ -46,13 +46,39 @@ export function PayloadPreview({ producer, onClose }: PayloadPreviewProps) {
   const [testResult, setTestResult] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleUpdatePayload = (key: string, value: string) => {
-    setTestPayload((prev) => ({ ...prev, [key]: value }))
+  const handleUpdatePayload = (key: string, value: string, type: string) => {
+    let parsedValue: any = value
+
+    try {
+      switch (type) {
+        case "int":
+          parsedValue = value === "" ? 0 : parseInt(value, 10)
+          if (isNaN(parsedValue)) parsedValue = 0
+          break
+        case "string":
+          parsedValue = value
+          break
+        case "object":
+        case "array":
+          parsedValue = JSON.parse(value)
+          break
+        default:
+          parsedValue = value
+      }
+    } catch {
+      // If parsing fails, keep as string
+      parsedValue = value
+    }
+
+    setTestPayload((prev) => ({ ...prev, [key]: parsedValue }))
   }
 
   const getDisplayValue = (value: any): string => {
     if (typeof value === "string") {
       return value
+    }
+    if (typeof value === "number") {
+      return String(value)
     }
     try {
       return JSON.stringify(value)
@@ -112,7 +138,7 @@ export function PayloadPreview({ producer, onClose }: PayloadPreviewProps) {
                   </label>
                   <Input
                     value={getDisplayValue(testPayload[attr.key])}
-                    onChange={(e) => handleUpdatePayload(attr.key, e.target.value)}
+                    onChange={(e) => handleUpdatePayload(attr.key, e.target.value, attr.type)}
                     className="font-mono text-sm bg-input border-border"
                   />
                 </div>
