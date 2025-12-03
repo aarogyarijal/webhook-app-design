@@ -39,9 +39,9 @@ export function ProducerDetail({ producerId, onBack }: ProducerDetailProps) {
           Back
         </Button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-140px)]">
-          {/* Left Side - Producer Info */}
-          <div className="space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-140px)]">
+          {/* Left Side - Producer Info (1/3) */}
+          <div className="space-y-6 lg:col-span-1">
             <div>
               <div className="mb-4">
                 <h1 className="text-3xl font-bold">{producer.name}</h1>
@@ -81,8 +81,8 @@ export function ProducerDetail({ producerId, onBack }: ProducerDetailProps) {
             </div>
           </div>
 
-          {/* Right Side - Consumers (Scrollable) */}
-          <div className="flex flex-col min-h-0">
+          {/* Right Side - Consumers (Scrollable) (2/3) */}
+          <div className="flex flex-col min-h-0 lg:col-span-2">
             <div className="flex items-center justify-between mb-4 shrink-0">
               <h2 className="text-2xl font-bold">Consumers ({consumers.length})</h2>
               <Button
@@ -137,9 +137,29 @@ export function ProducerDetail({ producerId, onBack }: ProducerDetailProps) {
                             {consumer.status}
                           </span>
                         </div>
-                        <p className="text-xs text-muted-foreground font-mono mb-2 break-all">{consumer.webhookUrl}</p>
-                        <div className="text-xs text-muted-foreground">
-                          {consumer.attributes.length} attributes mapped
+                        <p className="text-xs text-muted-foreground font-mono mb-3 break-all">{consumer.webhookUrl}</p>
+                        
+                        {/* Attribute Mappings */}
+                        <div className="space-y-1.5">
+                          {consumer.attributes.map((attr, idx) => (
+                            <div key={idx} className="flex items-center gap-2 text-xs flex-wrap">
+                              <span className="font-mono text-muted-foreground">{attr.key}</span>
+                              <AttributeBadge type={attr.type} />
+                              {attr.mappingType === "direct" && attr.producerAttributeKey && (
+                                <span className="text-muted-foreground">← {attr.producerAttributeKey}</span>
+                              )}
+                              {attr.mappingType === "hardcoded" && (
+                                <span className="text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded border border-blue-500/20">
+                                  = "{attr.value}"
+                                </span>
+                              )}
+                              {attr.mappingType === "expression" && attr.expression && (
+                                <span className="text-purple-400 bg-purple-500/10 px-1.5 py-0.5 rounded border border-purple-500/20 font-mono truncate max-w-[150px]">
+                                  ƒ {attr.expression}
+                                </span>
+                              )}
+                            </div>
+                          ))}
                         </div>
                       </div>
                       <div className="flex gap-2 shrink-0 ml-4">
