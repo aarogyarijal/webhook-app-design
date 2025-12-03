@@ -47,11 +47,17 @@ export function PayloadPreview({ producer, onClose }: PayloadPreviewProps) {
   const [isLoading, setIsLoading] = useState(false)
 
   const handleUpdatePayload = (key: string, value: string) => {
+    setTestPayload((prev) => ({ ...prev, [key]: value }))
+  }
+
+  const getDisplayValue = (value: any): string => {
+    if (typeof value === "string") {
+      return value
+    }
     try {
-      const parsed = JSON.parse(value)
-      setTestPayload((prev) => ({ ...prev, [key]: parsed }))
+      return JSON.stringify(value)
     } catch {
-      setTestPayload((prev) => ({ ...prev, [key]: value }))
+      return String(value)
     }
   }
 
@@ -105,7 +111,7 @@ export function PayloadPreview({ producer, onClose }: PayloadPreviewProps) {
                     {attr.key} ({attr.type})
                   </label>
                   <Input
-                    value={JSON.stringify(testPayload[attr.key])}
+                    value={getDisplayValue(testPayload[attr.key])}
                     onChange={(e) => handleUpdatePayload(attr.key, e.target.value)}
                     className="font-mono text-sm bg-input border-border"
                   />
